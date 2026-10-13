@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# AI assistant files (kept local, never committed)
+ai/
+.claude/
+CLAUDE.md
+CLAUDE.local.md
