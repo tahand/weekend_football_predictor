@@ -1,0 +1,614 @@
+#:import dp kivy.metrics.dp
+#:import theme football_predictor.ui.theme
+
+# ------------------------------------------------------------------ basics
+
+<FlatButton>:
+    background_normal: ''
+    background_down: ''
+    background_disabled_normal: ''
+    background_disabled_down: ''
+    background_color: 0, 0, 0, 0
+    color: theme.TEXT
+    disabled_color: theme.MUTED
+    font_size: '14sp'
+    size_hint_y: None
+    height: dp(36)
+    padding: dp(14), 0
+    canvas.before:
+        Color:
+            rgba: theme.PANEL if self.disabled else (self.bg if self.state == 'normal' else self.bg_down)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(4)]
+
+<PrimaryButton>:
+    bg: theme.ACCENT
+    bg_down: theme.ACCENT_DARK
+    bold: True
+
+<DangerButton>:
+    bg: theme.DANGER
+    bg_down: theme.DANGER_DARK
+
+<NavButton>:
+    group: 'nav'
+    allow_no_selection: False
+    background_normal: ''
+    background_down: ''
+    background_color: 0, 0, 0, 0
+    font_size: '15sp'
+    bold: self.state == 'down'
+    color: theme.TEXT if self.state == 'down' else theme.MUTED
+    size_hint_x: None
+    width: dp(120)
+    canvas.before:
+        Color:
+            rgba: theme.ACCENT if self.state == 'down' else (0, 0, 0, 0)
+        Rectangle:
+            pos: self.x, self.y
+            size: self.width, dp(3)
+
+<ListToggle>:
+    group: 'models'
+    allow_no_selection: False
+    markup: True
+    background_normal: ''
+    background_down: ''
+    background_color: 0, 0, 0, 0
+    color: theme.TEXT
+    halign: 'left'
+    valign: 'middle'
+    text_size: self.width - dp(20), self.height
+    size_hint_y: None
+    height: dp(54)
+    canvas.before:
+        Color:
+            rgba: theme.ACCENT_DARK if self.state == 'down' else theme.PANEL_2
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(4)]
+
+<Cell>:
+    color: theme.TEXT
+    font_size: '13sp'
+    text_size: self.width - dp(12), self.height
+    valign: 'middle'
+    shorten: True
+    shorten_from: 'right'
+    canvas.before:
+        Color:
+            rgba: self.bg
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<Bar>:
+    canvas:
+        Color:
+            rgba: theme.PANEL_2
+        Rectangle:
+            pos: self.x, self.y + dp(5)
+            size: self.width, self.height - dp(10)
+        Color:
+            rgba: self.bar_color
+        Rectangle:
+            pos: self.x, self.y + dp(5)
+            size: self.width * self.value, self.height - dp(10)
+
+<DataTable>:
+    orientation: 'vertical'
+    size_hint_y: None
+    height: self.minimum_height
+
+<BarChart>:
+    orientation: 'vertical'
+    size_hint_y: None
+    height: self.minimum_height
+    spacing: dp(2)
+
+<WrapLabel>:
+    color: theme.TEXT
+    font_size: '14sp'
+    text_size: self.width, None
+    size_hint_y: None
+    height: self.texture_size[1]
+    markup: True
+
+<MutedLabel>:
+    color: theme.MUTED
+    font_size: '13sp'
+
+<SectionTitle>:
+    color: theme.TEXT
+    bold: True
+    font_size: '16sp'
+    size_hint_y: None
+    height: dp(32)
+    text_size: self.size
+    halign: 'left'
+    valign: 'bottom'
+
+<FieldLabel@Label>:
+    color: theme.MUTED
+    font_size: '13sp'
+    size_hint_y: None
+    height: dp(22)
+    text_size: self.size
+    halign: 'left'
+    valign: 'bottom'
+
+<Field@TextInput>:
+    multiline: False
+    size_hint_y: None
+    height: dp(36)
+    font_size: '14sp'
+    padding: dp(8), dp(9)
+    write_tab: False
+
+<Panel@BoxLayout>:
+    orientation: 'vertical'
+    padding: dp(12)
+    spacing: dp(8)
+    canvas.before:
+        Color:
+            rgba: theme.PANEL
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(6)]
+
+<Toolbar@BoxLayout>:
+    size_hint_y: None
+    height: dp(36)
+    spacing: dp(8)
+
+<Spinner>:
+    font_size: '14sp'
+
+# ------------------------------------------------------------------ root
+
+<RootLayout>:
+    orientation: 'vertical'
+    canvas.before:
+        Color:
+            rgba: theme.BACKGROUND
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    BoxLayout:
+        size_hint_y: None
+        height: dp(56)
+        padding: dp(16), 0
+        spacing: dp(4)
+        canvas.before:
+            Color:
+                rgba: theme.PANEL
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            text: '[b]Weekend[/b] Football Predictor'
+            markup: True
+            font_size: '19sp'
+            color: theme.TEXT
+            size_hint_x: None
+            width: dp(300)
+            text_size: self.size
+            halign: 'left'
+            valign: 'middle'
+        NavButton:
+            id: nav_data
+            text: 'Data'
+            state: 'down'
+            on_release: root.show('data')
+        NavButton:
+            id: nav_models
+            text: 'Models'
+            on_release: root.show('models')
+        NavButton:
+            id: nav_predict
+            text: 'Predictions'
+            on_release: root.show('predict')
+        NavButton:
+            id: nav_analysis
+            text: 'Analysis'
+            on_release: root.show('analysis')
+        Widget:
+    ScreenManager:
+        id: sm
+        DataScreen:
+            id: data_screen
+        ModelsScreen:
+            id: models_screen
+        PredictScreen:
+            id: predict_screen
+        AnalysisScreen:
+            id: analysis_screen
+    BoxLayout:
+        size_hint_y: None
+        height: dp(30)
+        padding: dp(16), 0
+        spacing: dp(12)
+        canvas.before:
+            Color:
+                rgba: theme.PANEL
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            text: app.status
+            color: theme.MUTED
+            font_size: '13sp'
+            text_size: self.size
+            halign: 'left'
+            valign: 'middle'
+            shorten: True
+        ProgressBar:
+            size_hint_x: 0.25
+            max: 1
+            value: app.progress
+            opacity: 1 if app.busy else 0
+
+# ------------------------------------------------------------------ data
+
+<DataScreen>:
+    name: 'data'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(16)
+        spacing: dp(12)
+        Toolbar:
+            PrimaryButton:
+                text: 'Import CSV files...'
+                size_hint_x: None
+                width: dp(190)
+                disabled: app.busy
+                on_release: root.open_import()
+            FlatButton:
+                text: 'Clear fixtures'
+                size_hint_x: None
+                width: dp(140)
+                disabled: app.busy
+                on_release: root.clear_fixtures()
+            DangerButton:
+                text: 'Clear all data'
+                size_hint_x: None
+                width: dp(140)
+                disabled: app.busy
+                on_release: root.clear_all()
+            Widget:
+            FlatButton:
+                text: 'Open data folder'
+                size_hint_x: None
+                width: dp(160)
+                on_release: app.open_folder(app.workspace.root)
+        MutedLabel:
+            text: 'Import results and fixtures in the football-data.co.uk CSV format (like the files in example_files). Played matches are added to the history used for training; unplayed matches become the fixtures to predict. You can also drag and drop CSV files onto this window.'
+        BoxLayout:
+            spacing: dp(12)
+            Panel:
+                size_hint_x: 0.42
+                SectionTitle:
+                    id: summary_title
+                    text: 'Leagues'
+                ScrollView:
+                    do_scroll_x: False
+                    DataTable:
+                        id: div_table
+            Panel:
+                SectionTitle:
+                    id: fixtures_title
+                    text: 'Fixtures to predict'
+                ScrollView:
+                    do_scroll_x: False
+                    DataTable:
+                        id: fixtures_table
+
+# ------------------------------------------------------------------ models
+
+<ModelsScreen>:
+    name: 'models'
+    BoxLayout:
+        padding: dp(16)
+        spacing: dp(12)
+        Panel:
+            size_hint_x: 0.3
+            SectionTitle:
+                text: 'Models'
+            ScrollView:
+                do_scroll_x: False
+                BoxLayout:
+                    id: model_list
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: dp(6)
+            Toolbar:
+                FlatButton:
+                    text: 'New'
+                    on_release: root.new_model()
+                FlatButton:
+                    text: 'Duplicate'
+                    on_release: root.duplicate_model()
+                DangerButton:
+                    text: 'Delete'
+                    on_release: root.delete_model()
+        Panel:
+            ScrollView:
+                do_scroll_x: False
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: dp(6)
+                    padding: 0, 0, dp(12), 0
+                    SectionTitle:
+                        text: 'Model settings'
+                    FieldLabel:
+                        text: 'Name'
+                    Field:
+                        id: name_input
+                    FieldLabel:
+                        text: 'Description'
+                    Field:
+                        id: desc_input
+                        multiline: True
+                        height: dp(64)
+                    FieldLabel:
+                        text: 'Algorithm'
+                    Spinner:
+                        id: algo_spinner
+                        size_hint_y: None
+                        height: dp(36)
+                        on_text: root.on_algorithm_label(self.text)
+                    MutedLabel:
+                        id: algo_desc
+                    FieldLabel:
+                        text: 'Feature groups the model can use'
+                    GridLayout:
+                        id: feature_box
+                        cols: 2
+                        size_hint_y: None
+                        height: self.minimum_height
+                        row_default_height: dp(32)
+                        row_force_default: True
+                    BoxLayout:
+                        size_hint_y: None
+                        height: dp(60)
+                        spacing: dp(12)
+                        BoxLayout:
+                            orientation: 'vertical'
+                            FieldLabel:
+                                text: 'Form window (last N matches)'
+                            Field:
+                                id: window_input
+                                input_filter: 'int'
+                        BoxLayout:
+                            orientation: 'vertical'
+                            FieldLabel:
+                                id: div_label
+                                text: 'Train on divisions (blank = all)'
+                            Field:
+                                id: div_input
+                                hint_text: 'e.g. E0, E1'
+                    SectionTitle:
+                        text: 'Algorithm settings'
+                    GridLayout:
+                        id: params_box
+                        cols: 2
+                        spacing: dp(12), dp(6)
+                        size_hint_y: None
+                        height: self.minimum_height
+                    MutedLabel:
+                        id: last_backtest
+                        padding: 0, dp(12)
+            Toolbar:
+                PrimaryButton:
+                    text: 'Save changes'
+                    on_release: root.save_model()
+                FlatButton:
+                    text: 'Discard changes'
+                    on_release: root.load_selected()
+                FlatButton:
+                    text: 'Reset settings to defaults'
+                    on_release: root.reset_params()
+                FlatButton:
+                    text: 'Save & backtest'
+                    disabled: app.busy
+                    on_release: root.save_and_backtest()
+
+# ------------------------------------------------------------------ predictions
+
+<PredictScreen>:
+    name: 'predict'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(16)
+        spacing: dp(12)
+        Toolbar:
+            Label:
+                text: 'Model'
+                color: theme.MUTED
+                size_hint_x: None
+                width: dp(50)
+            Spinner:
+                id: model_spinner
+                size_hint_x: None
+                width: dp(280)
+            PrimaryButton:
+                text: 'Predict fixtures'
+                size_hint_x: None
+                width: dp(160)
+                disabled: app.busy
+                on_release: root.predict()
+            FlatButton:
+                text: 'Save to tracker'
+                size_hint_x: None
+                width: dp(150)
+                disabled: app.busy or not root.has_predictions
+                on_release: root.save_history()
+            FlatButton:
+                text: 'Export CSV'
+                size_hint_x: None
+                width: dp(120)
+                disabled: not root.has_predictions
+                on_release: root.export()
+            Widget:
+        Panel:
+            SectionTitle:
+                id: pred_title
+                text: 'Predictions'
+            ScrollView:
+                do_scroll_x: False
+                DataTable:
+                    id: pred_table
+        MutedLabel:
+            text: 'Pick = predicted result (H home win, D draw, A away win). Score = most likely scoreline for that result. Confidence = the model\'s probability for its pick (green 60%+, amber 47-60%). xG = expected goals. Value = expected return backing the pick at the bookmakers\' average odds. * = a team has fewer than 3 matches of history. Save to tracker to measure how the predictions actually perform once results are imported.'
+
+# ------------------------------------------------------------------ analysis
+
+<AnalysisScreen>:
+    name: 'analysis'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(16)
+        spacing: dp(12)
+        Toolbar:
+            PrimaryButton:
+                text: 'Backtest all models'
+                size_hint_x: None
+                width: dp(190)
+                disabled: app.busy
+                on_release: root.backtest_all()
+            Label:
+                text: 'Warm-up matches'
+                color: theme.MUTED
+                size_hint_x: None
+                width: dp(120)
+            Field:
+                id: min_train
+                input_filter: 'int'
+                size_hint_x: None
+                width: dp(70)
+            Label:
+                text: 'Retrain every (days)'
+                color: theme.MUTED
+                size_hint_x: None
+                width: dp(150)
+            Field:
+                id: step_days
+                input_filter: 'int'
+                size_hint_x: None
+                width: dp(60)
+            Widget:
+            FlatButton:
+                text: 'Export report'
+                size_hint_x: None
+                width: dp(140)
+                on_release: root.export_report()
+        ScrollView:
+            do_scroll_x: False
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(10)
+                padding: 0, 0, dp(12), dp(12)
+                SectionTitle:
+                    text: 'Model comparison - walk-forward backtest'
+                MutedLabel:
+                    text: 'Each model is trained only on matches before each week and then predicts that week, repeated through the season, so the scores show how it would really have performed. Lower log loss, Brier and RPS are better.'
+                DataTable:
+                    id: compare_table
+                MutedLabel:
+                    id: compare_note
+                SectionTitle:
+                    text: 'Result accuracy'
+                BarChart:
+                    id: accuracy_chart
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(44)
+                    spacing: dp(8)
+                    SectionTitle:
+                        text: 'Model detail'
+                        size_hint_x: None
+                        width: dp(130)
+                    Spinner:
+                        id: detail_spinner
+                        size_hint: None, None
+                        width: dp(260)
+                        height: dp(36)
+                        pos_hint: {'center_y': 0.4}
+                        on_text: root.show_detail()
+                    Spinner:
+                        id: source_spinner
+                        text: 'Backtest'
+                        values: ['Backtest', 'Saved predictions']
+                        size_hint: None, None
+                        width: dp(200)
+                        height: dp(36)
+                        pos_hint: {'center_y': 0.4}
+                        on_text: root.show_detail()
+                    Widget:
+                WrapLabel:
+                    id: detail_summary
+                GridLayout:
+                    cols: 2
+                    spacing: dp(16)
+                    size_hint_y: None
+                    height: self.minimum_height
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        SectionTitle:
+                            text: 'Accuracy by confidence'
+                        BarChart:
+                            id: confidence_chart
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        SectionTitle:
+                            text: 'Confusion matrix (rows = actual result)'
+                        DataTable:
+                            id: confusion_table
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        SectionTitle:
+                            text: 'By predicted outcome'
+                        DataTable:
+                            id: outcome_table
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        SectionTitle:
+                            text: 'By division'
+                        DataTable:
+                            id: division_table
+                SectionTitle:
+                    text: 'Calibration - when the model says X%, how often does it happen?'
+                DataTable:
+                    id: calibration_table
+                SectionTitle:
+                    text: 'Tracker - saved predictions vs actual results'
+                MutedLabel:
+                    text: 'Predictions saved from the Predictions page are scored here once their results are imported.'
+                DataTable:
+                    id: live_table
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(40)
+                    Widget:
+                    DangerButton:
+                        text: 'Clear tracker'
+                        size_hint_x: None
+                        width: dp(140)
+                        on_release: root.clear_tracker()
